@@ -1,0 +1,39 @@
+{
+  "name": "meshblu-firehose-socket.io",
+  "version": "1.0.0",
+  "description": "Meshblu Firehose Client for socket.io",
+  "main": "index.js",
+  "scripts": {
+    "test": "istanbul cover _mocha -- -R spec --require coffee-coverage/register-istanbul"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/octoblu/node-meshblu-firehose-socket.io.git"
+  },
+  "keywords": [
+    "meshblu",
+    "meshblu-client",
+    "meshblu-firehose"
+  ],
+  "author": "Octoblu, Inc <npm@octoblu.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/octoblu/node-meshblu-firehose-socket.io/issues"
+  },
+  "homepage": "https://github.com/octoblu/node-meshblu-firehose-socket.io#readme",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "coffee-coverage": "^1.0.1",
+    "coffee-script": "^1.10.0",
+    "istanbul": "^0.4.2",
+    "mocha": "^2.4.5",
+    "mocha-istanbul": "^0.2.0",
+    "sinon": "^1.17.3",
+    "sinon-chai": "^2.8.0",
+    "socket.io": "^1.4.5"
+  },
+  "dependencies": {
+    "eventemitter2": "^1.0.0",
+    "socket.io-client": "^1.4.5"
+  }
+}
