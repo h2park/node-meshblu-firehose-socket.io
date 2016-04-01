@@ -8,8 +8,29 @@ before_script:
 - npm install -g codeclimate-test-reporter
 after_script:
 - codeclimate-test-reporter < coverage/lcov.info
+before_deploy:
+- npm install browserify coffeeify
+- mkdir -p deploy/meshblu-firehose-socket.io/latest
+- mkdir -p deploy/meshblu-firehose-socket.io/$TRAVIS_TAG
+- node_modules/.bin/browserify -s MeshbluFirehoseSocketIO -t coffeeify index.coffee > deploy/meshblu-firehose-socket.io/latest/meshblu-firehose-socket.io.bundle.js
+- gzip deploy/meshblu-firehose-socket.io/latest/meshblu-firehose-socket.io.bundle.js
+- mv deploy/meshblu-firehose-socket.io/latest/meshblu-firehose-socket.io.bundle.js.gz  deploy/meshblu-firehose-socket.io/latest/meshblu-firehose-socket.io.bundle.js
+- cp deploy/meshblu-firehose-socket.io/latest/meshblu-firehose-socket.io.bundle.js deploy/meshblu-firehose-socket.io/$TRAVIS_TAG/meshblu-firehose-socket.io.bundle.js
 deploy:
-  provider: npm
+- provider: s3
+  access_key_id: AKIAJH2D5IPIRHYJT5IA
+  secret_access_key:
+    secure: RY0OEuLhnlPnlrxOO4Hv+HOrlReuGL0IpM9nSCdmiGYk/PojSelHznl3mKe3eGLqA3gRy5fz504chdDXmxxpcf/3s4hKG3jnceRCPOeKCqtckVleDS+wlnsKxRCIYMdtNZyUYsDUVYd2EiEdwevC8osWqJfQabWFHQS0C7P9FxT9xoJ1Dki89IZPKBbL0P4NzPBbgGbGmjP3lH+5CHBMKNT19+2FRJK6tipotADQ0/ae3zgBr6VusmmgzasHQZ1uVJPb/h/d4ALXD3AF86z9ZUq+qd7UOZgs+nyNkQ701T/+FK0xlAN048fq3KRiF9jKAStwo25aXgQ8m3QzZ8fnrjR0zMnn+LX6MjVq5pKO8o/8wXj12063ahNFlNT5i3xqk9LsOciiE6NV/PZenRk4ijEf4g8Jku60KKBVAm+8kL3AUNRhLMIZZKBRyiUKsb3HJ/COgK7qiMPmiUY2oMICM29FI1kc8EBRc8BcHjtfDcBtLTnV4XUc73XXgvRvKUlCBXp7aX3Ww6ggi5wujYqV9swAwZxu3JjKXzs0nKYN61ZY+tHAw863eZzutKa9EteS9yhrpcT76Tw1wvtpVfUtybxlKR19xZ9djuZvpLztJoOGlxjNFzLl8+3e7bTO2W526UHbUTrKk1Pmd1EW1iLMClGxAV0CNK5VWHAe7yvZMIw=
+  bucket: octoblu-cdn
+  region: us-west-2
+  skip_cleanup: true
+  local-dir: deploy
+  detect_encoding: true
+  upload-dir: js
+  on:
+    tags: true
+    all_branches: true
+- provider: npm
   email: serveradmin@octoblu.com
   api_key:
     secure: Vh2Q1/1KwxDXt4F/NKTPodVAVBWpDmjBOcw78tANQJOau5+DUwaNetSVFIKaG72Nm88W3KFR8J3tWPU7uqFclZZgq7UT4F6J8ZQTCacKfkDxk6D+D8Zt8wPKfOQNLSgiH+jxRaw2r3kJb6nLbUgw2TTGBYwLavya3lYpd8ToevAxVckWSTDmAXi5/1qVppRjdXEM+2sMrChr2Zp6otd+0BEvz14nQAl22DAOz4+buGFJkzx4GgSo3KL5Z65kh43ZHUr72FZSvTFL/xmLxRrQFlcXZRucqLZ7lkrrQvpC8QSatHmLTf8H00Jw9WDFYQxhRYuf3qy8Q/GLUButjyvRpb8lO3LbWmmClRYCGjPyAi0Oj2yiI1htQdjh0QA+wnxT57ceQSq5W0g9o4wEWMMaDNICGlsDmlwZMGbINGQSN53xFxEd3mCoNt+gcO8lQZxoTUOuw2ExGA7S/tlB855KyRPrU5g+QyKcBZ/FbSoyN95LmECvBQXjrTT5WdRcFfOvc4UZmSvHgrFINGkvLc05Lcp2OVjG6DomSAZOwwHIwPDctP3qIYtRcQyrWAUyu7rwHOUUz63lHDQ8bTkRcb59mYKFnOBF3g3WvFDW4WukpG5dr4tWh/Y12UzS3e39oeLitdVNUJepWx5j1hch7YBD2cwNf5Wj7iq+8V4jJa2AWG0=
