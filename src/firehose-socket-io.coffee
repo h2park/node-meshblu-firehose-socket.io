@@ -10,13 +10,15 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
     throw new Error('MeshbluFirehoseSocketIO: meshbluConfig.port is required') unless @meshbluConfig.port?
     throw new Error('MeshbluFirehoseSocketIO: meshbluConfig.protocol is required') unless @meshbluConfig.protocol?
 
-  connect: =>
+  connect: ({uuid}) =>
     options =
+      path: "/socket.io/v1/#{uuid}"
       extraHeaders:
         'X-Meshblu-UUID': @meshbluConfig.uuid
         'X-Meshblu-Token': @meshbluConfig.token
 
-    @socket = SocketIOClient @url(), options
+    url = @url {uuid}
+    @socket = SocketIOClient url, options
     @socket.on 'connect', =>
       @emit 'connect'
 
@@ -29,10 +31,11 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
   close: (callback) =>
     @socket.close callback
 
-  url: =>
+  url: ({uuid}) =>
     URL.format
       hostname: @meshbluConfig.hostname
       port: @meshbluConfig.port
       protocol: @meshbluConfig.protocol
+      slashes: true
 
 module.exports = MeshbluFirehoseSocketIO
