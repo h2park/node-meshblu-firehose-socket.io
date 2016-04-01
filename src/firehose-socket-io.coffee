@@ -26,6 +26,9 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
     @socket.on 'message', (message) =>
       @emit 'message', message
 
+  close: (callback) =>
+    @socket.close callback
+
   url: =>
     URL.format
       hostname: @meshbluConfig.hostname
