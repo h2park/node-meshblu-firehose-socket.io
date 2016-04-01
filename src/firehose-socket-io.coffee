@@ -21,7 +21,7 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
     'upgradeError'
   ]
 
-  constructor: ({@meshbluConfig}) ->
+  constructor: ({@meshbluConfig, @transports}) ->
     throw new Error('MeshbluFirehoseSocketIO: meshbluConfig.uuid is required') unless @meshbluConfig.uuid?
     throw new Error('MeshbluFirehoseSocketIO: meshbluConfig.token is required') unless @meshbluConfig.token?
     throw new Error('MeshbluFirehoseSocketIO: meshbluConfig.hostname is required') unless @meshbluConfig.hostname?
@@ -34,6 +34,7 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
       extraHeaders:
         'X-Meshblu-UUID': @meshbluConfig.uuid
         'X-Meshblu-Token': @meshbluConfig.token
+      transports: @transports
 
     url = @url {uuid}
     @socket = SocketIOClient url, options

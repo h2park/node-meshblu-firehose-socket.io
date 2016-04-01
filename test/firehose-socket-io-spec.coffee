@@ -14,14 +14,15 @@ describe 'MeshbluFirehoseSocketIO', ->
       meshbluConfig:
         hostname: 'localhost'
         port: 0xd00d
-        protocol: 'http'
+        protocol: 'ws'
         uuid: 'a-uuid'
         token: 'a-token'
+      transports: ['websocket']
     }
 
   describe '-> url', ->
     it 'should return a url', ->
-      expect(@sut.url uuid: 'a-uuid').to.equal 'http://localhost:53261'
+      expect(@sut.url uuid: 'a-uuid').to.equal 'ws://localhost:53261'
 
   describe '-> connect', ->
     beforeEach (done) ->
