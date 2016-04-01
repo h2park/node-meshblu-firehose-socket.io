@@ -1,8 +1,26 @@
+_              = require 'lodash'
 SocketIOClient = require 'socket.io-client'
 EventEmitter2  = require 'eventemitter2'
 URL            = require 'url'
 
 class MeshbluFirehoseSocketIO extends EventEmitter2
+  @EVENTS = [
+    'close'
+    'connect'
+    'connect_error'
+    'connect_timeout'
+    'connecting'
+    'disconnect'
+    'error'
+    'message'
+    'reconnect'
+    'reconnect_error'
+    'reconnect_failed'
+    'reconnecting'
+    'upgrade'
+    'upgradeError'
+  ]
+
   constructor: ({@meshbluConfig}) ->
     throw new Error('MeshbluFirehoseSocketIO: meshbluConfig.uuid is required') unless @meshbluConfig.uuid?
     throw new Error('MeshbluFirehoseSocketIO: meshbluConfig.token is required') unless @meshbluConfig.token?
@@ -19,14 +37,13 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
 
     url = @url {uuid}
     @socket = SocketIOClient url, options
-    @socket.on 'connect', =>
-      @emit 'connect'
 
-    @socket.on 'disconnect', =>
-      @emit 'disconnect'
+    @bindEvents()
 
-    @socket.on 'message', (message) =>
-      @emit 'message', message
+  bindEvents: =>
+    _.each MeshbluFirehoseSocketIO.EVENTS, (event) =>
+      @socket.on event, =>
+        @emit event, arguments...
 
   close: (callback) =>
     @socket.close callback
