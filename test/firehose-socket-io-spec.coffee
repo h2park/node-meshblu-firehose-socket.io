@@ -30,8 +30,7 @@ describe 'MeshbluFirehoseSocketIO', ->
         {@pathname} = URL.parse @socket.client.request.url
         @uuid = @socket.client.request.headers['x-meshblu-uuid']
         @token = @socket.client.request.headers['x-meshblu-token']
-      @sut.connect uuid: 'a-uuid'
-      @sut.on 'connect', done
+      @sut.connect uuid: 'a-uuid', done
 
     it 'should connect', ->
       expect(@socket).to.exist
@@ -44,8 +43,7 @@ describe 'MeshbluFirehoseSocketIO', ->
   describe '-> onMessage', ->
     beforeEach (done) ->
       @server.on 'connection', (@socket) =>
-      @sut.connect uuid: 'a-uuid'
-      @sut.on 'connect', done
+      @sut.connect uuid: 'a-uuid', done
 
     beforeEach (done) ->
       @socket.emit 'message', {some: "thing"}

@@ -28,7 +28,7 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
     throw new Error('MeshbluFirehoseSocketIO: meshbluConfig.port is required') unless @meshbluConfig.port?
     throw new Error('MeshbluFirehoseSocketIO: meshbluConfig.protocol is required') unless @meshbluConfig.protocol?
 
-  connect: ({uuid}) =>
+  connect: ({uuid}, callback) =>
     options =
       path: "/socket.io/v1/#{uuid}"
       extraHeaders:
@@ -38,7 +38,12 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
 
     url = @url {uuid}
     @socket = SocketIOClient url, options
-
+    @socket.once 'connect', =>
+      callback()
+      callback = ->
+    @socket.once 'connect_error', (error) =>
+      callback error
+      callback = ->
     @bindEvents()
 
   bindEvents: =>
