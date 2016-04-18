@@ -27,7 +27,7 @@ describe 'MeshbluFirehoseSocketIO', ->
   describe '-> connect', ->
     beforeEach (done) ->
       @server.on 'connection', (@socket) =>
-        {@pathname} = URL.parse @socket.client.request.url
+        {@pathname, @query} = URL.parse @socket.client.request.url, true
         @uuid = @socket.client.request.headers['x-meshblu-uuid']
         @token = @socket.client.request.headers['x-meshblu-token']
       @sut.connect uuid: 'a-uuid', done
@@ -39,6 +39,8 @@ describe 'MeshbluFirehoseSocketIO', ->
     it 'should pass along the auth info', ->
       expect(@uuid).to.equal 'a-uuid'
       expect(@token).to.equal 'a-token'
+      expect(@query.uuid).to.equal 'a-uuid'
+      expect(@query.token).to.equal 'a-token'
 
   describe '-> onMessage', ->
     beforeEach (done) ->

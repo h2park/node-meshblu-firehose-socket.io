@@ -34,6 +34,9 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
       extraHeaders:
         'X-Meshblu-UUID': @meshbluConfig.uuid
         'X-Meshblu-Token': @meshbluConfig.token
+      query:
+        uuid: @meshbluConfig.uuid
+        token: @meshbluConfig.token
       transports: @transports
 
     url = @url {uuid}
