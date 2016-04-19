@@ -48,8 +48,13 @@ describe 'MeshbluFirehoseSocketIO', ->
       @sut.connect uuid: 'a-uuid', done
 
     beforeEach (done) ->
-      @socket.emit 'message', {some: "thing"}
+      message =
+        metadata:
+          some: "thing"
+        rawData: '{"payload":"HI"}'
+      @socket.emit 'message', message
       @sut.on 'message', (@message) => done()
 
     it 'should send me a message', ->
-      expect(@message).to.deep.equal some: 'thing'
+      expect(@message.metadata).to.deep.equal some: 'thing'
+      expect(@message.data).to.deep.equal payload: 'HI'

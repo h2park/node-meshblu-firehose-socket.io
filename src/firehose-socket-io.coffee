@@ -12,7 +12,6 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
     'connecting'
     'disconnect'
     'error'
-    'message'
     'reconnect'
     'reconnect_error'
     'reconnect_failed'
@@ -50,6 +49,7 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
     @bindEvents()
 
   bindEvents: =>
+    @socket.on 'message', @_onMessage
     _.each MeshbluFirehoseSocketIO.EVENTS, (event) =>
       @socket.on event, =>
         @emit event, arguments...
@@ -63,5 +63,17 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
       port: @meshbluConfig.port
       protocol: @meshbluConfig.protocol
       slashes: true
+
+  _onMessage: (message) =>
+    newMessage =
+      metadata: message.metadata
+
+    try
+      newMessage.data = JSON.parse message.rawData
+    catch
+      newMessage.rawData = message.rawData
+
+    @emit 'message', newMessage
+
 
 module.exports = MeshbluFirehoseSocketIO
