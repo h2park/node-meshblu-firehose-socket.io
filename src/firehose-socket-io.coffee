@@ -26,6 +26,7 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
     throw new Error('MeshbluFirehoseSocketIO: meshbluConfig.hostname is required') unless @meshbluConfig.hostname?
     throw new Error('MeshbluFirehoseSocketIO: meshbluConfig.port is required') unless @meshbluConfig.port?
     throw new Error('MeshbluFirehoseSocketIO: meshbluConfig.protocol is required') unless @meshbluConfig.protocol?
+    super wildcard: true
 
   connect: ({uuid}, callback) =>
     options =
@@ -75,5 +76,13 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
 
     @emit 'message', newMessage
 
+    @_emitWithRoute newMessage
+
+  _emitWithRoute: (message) =>
+    hop = _.first(message.metadata.route)
+    return unless hop?
+    {from, type} = hop
+    channel = "#{type}.#{from}"
+    @emit channel, message
 
 module.exports = MeshbluFirehoseSocketIO

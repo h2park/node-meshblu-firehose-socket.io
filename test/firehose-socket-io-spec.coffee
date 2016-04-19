@@ -58,3 +58,54 @@ describe 'MeshbluFirehoseSocketIO', ->
     it 'should send me a message', ->
       expect(@message.metadata).to.deep.equal some: 'thing'
       expect(@message.data).to.deep.equal payload: 'HI'
+
+  describe '-> onTypeFrom', ->
+    beforeEach (done) ->
+      @server.on 'connection', (@socket) =>
+      @sut.connect uuid: 'a-uuid', done
+
+    beforeEach (done) ->
+      message =
+        metadata:
+          route: [from:'some-uuid',type:'boo.bear']
+          some: "thing"
+        rawData: '{"payload":"HI"}'
+      @socket.emit 'message', message
+      @sut.on 'boo.bear.some-uuid', (@message) => done()
+
+    it 'should send me a message', ->
+      expect(@message.data).to.deep.equal payload: 'HI'
+
+  describe '-> onType*', ->
+    beforeEach (done) ->
+      @server.on 'connection', (@socket) =>
+      @sut.connect uuid: 'a-uuid', done
+
+    beforeEach (done) ->
+      message =
+        metadata:
+          route: [from:'some-uuid',type:'green.face']
+          some: "thing"
+        rawData: '{"payload":"HI"}'
+      @socket.emit 'message', message
+      @sut.on 'green.face.*', (@message) => done()
+
+    it 'should send me a message', ->
+      expect(@message.data).to.deep.equal payload: 'HI'
+
+  describe '-> onSubType**', ->
+    beforeEach (done) ->
+      @server.on 'connection', (@socket) =>
+      @sut.connect uuid: 'a-uuid', done
+
+    beforeEach (done) ->
+      message =
+        metadata:
+          route: [from:'some-uuid',type:'orange.burro']
+          some: "thing"
+        rawData: '{"payload":"HI"}'
+      @socket.emit 'message', message
+      @sut.on 'orange.**', (@message) => done()
+
+    it 'should send me a message', ->
+      expect(@message.data).to.deep.equal payload: 'HI'
