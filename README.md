@@ -110,9 +110,9 @@ Establishes a socket.io connection to Meshblu Firehose and returns the connectio
 ##### Arguments
 
 * `options` connection options with the following keys:
-  * `protocol` The protocol to use when connecting to the server. May not be passed in if `resolveSrv` is true. Must be one of ws/wss (Default `wss`)
-  * `hostname` The hostname of the Meshblu server to connect to. May not be passed in if `resolveSrv` is true. (Default: `meshblu-socket-io.octoblu.com`)
-  * `port` The port of the Meshblu server to connect to. May not be passed in if `resolveSrv` is true. (Default: `443`)
+  * `protocol` The protocol to use when connecting to the server. Must be one of ws/wss (Default `wss`)
+  * `hostname` The hostname of the Meshblu server to connect to. (Default: `meshblu-firehose-socket-io.octoblu.com`)
+  * `port` The port of the Meshblu server to connect to. (Default: `443`)
   * `uuid` UUID of the device to connect with.
   * `token` Token of the device to connect with.
 
