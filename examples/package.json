@@ -1,0 +1,16 @@
+{
+  "name": "firehose-examples",
+  "version": "1.0.0",
+  "description": "Meshblu Firehose socket.io examples",
+  "main": "index.js",
+  "scripts": {
+    "test": "exit 0"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^1.1.3",
+    "meshblu-firehose-socket.io": "^1.7.0",
+    "meshblu-http": "^7.0.0"
+  }
+}
