@@ -1,4 +1,3 @@
-#!/usr/bin/env coffee
 MeshbluHttp     = require 'meshblu-http'
 MeshbluFirehose = require 'meshblu-firehose-socket.io'
 chalk           = require 'chalk'

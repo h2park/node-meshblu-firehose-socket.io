@@ -4,6 +4,7 @@
   "description": "Meshblu Firehose socket.io examples",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "exit 0"
   },
   "author": "",
