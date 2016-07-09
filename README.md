@@ -1,9 +1,9 @@
 # node-meshblu-firehose-socket.io
 Meshblu Firehose client for socket.io, stream messages from Meshblu Subscriptions.
 
-[![Build Status](https://travis-ci.org/octoblu/meshblu-firehose-socket.io.svg?branch=master)](https://travis-ci.org/octoblu/meshblu-firehose-socket.io)
-[![Code Climate](https://codeclimate.com/github/octoblu/meshblu-firehose-socket.io/badges/gpa.svg)](https://codeclimate.com/github/octoblu/meshblu-firehose-socket.io)
-[![Test Coverage](https://codeclimate.com/github/octoblu/meshblu-firehose-socket.io/badges/coverage.svg)](https://codeclimate.com/github/octoblu/meshblu-firehose-socket.io)
+[![Build Status](https://travis-ci.org/octoblu/node-meshblu-firehose-socket.io.svg?branch=master)](https://travis-ci.org/octoblu/node-meshblu-firehose-socket.io)
+[![Code Climate](https://codeclimate.com/github/octoblu/node-meshblu-firehose-socket.io/badges/gpa.svg)](https://codeclimate.com/github/octoblu/node-meshblu-firehose-socket.io)
+[![Test Coverage](https://codeclimate.com/github/octoblu/node-meshblu-firehose-socket.io/badges/coverage.svg)](https://codeclimate.com/github/octoblu/node-meshblu-firehose-socket.io)
 [![Slack Status](http://community-slack.octoblu.com/badge.svg)](http://community-slack.octoblu.com)
 
 [![NPM](https://nodei.co/npm/meshblu-firehose-socket.io.svg?style=flat)](https://npmjs.org/package/meshblu-firehose-socket.io)
