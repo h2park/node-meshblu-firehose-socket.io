@@ -36,11 +36,13 @@ The client side library establishes a secure socket.io connection to Meshblu Fir
 ```javascript
 var MeshbluFirehoseSocketIO = require('meshblu-firehose-socket.io');
 var firehose = new MeshbluFirehoseSocketIO({
-  hostname: 'meshblu-firehose-socket-io.octoblu.com',
-  port: 443,
-  protocol: 'wss',
-  uuid: '78159106-41ca-4022-95e8-2511695ce64c',
-  token: 'd5265dbc4576a88f8654a8fc2c4d46a6d7b85574'
+  meshbluConfig: {
+   hostname: 'meshblu-firehose-socket-io.octoblu.com',
+   port: 443,
+   protocol: 'wss',
+   uuid: '78159106-41ca-4022-95e8-2511695ce64c',
+   token: 'd5265dbc4576a88f8654a8fc2c4d46a6d7b85574'
+  }
 })
 firehose.connect({uuid: '78159106-41ca-4022-95e8-2511695ce64c'}, function(error){
   if (error) {
