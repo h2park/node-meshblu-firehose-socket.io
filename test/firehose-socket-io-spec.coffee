@@ -1,3 +1,5 @@
+{afterEach, beforeEach, describe, it} = global
+{expect} = require 'chai'
 MeshbluFirehoseSocketIO = require '../'
 URL                     = require 'url'
 SocketIO                = require 'socket.io'
@@ -20,17 +22,13 @@ describe 'MeshbluFirehoseSocketIO', ->
       transports: ['websocket']
     }
 
-  describe '-> url', ->
-    it 'should return a url', ->
-      expect(@sut.url uuid: 'a-uuid').to.equal 'ws://localhost:53261'
-
   describe '-> connect', ->
     beforeEach (done) ->
       @server.on 'connection', (@socket) =>
         {@pathname, @query} = URL.parse @socket.client.request.url, true
         @uuid = @socket.client.request.headers['x-meshblu-uuid']
         @token = @socket.client.request.headers['x-meshblu-token']
-      @sut.connect uuid: 'a-uuid', done
+      @sut.connect done
 
     it 'should connect', ->
       expect(@socket).to.exist
@@ -45,7 +43,7 @@ describe 'MeshbluFirehoseSocketIO', ->
   describe '-> onMessage', ->
     beforeEach (done) ->
       @server.on 'connection', (@socket) =>
-      @sut.connect uuid: 'a-uuid', done
+      @sut.connect done
 
     beforeEach (done) ->
       message =
@@ -62,7 +60,7 @@ describe 'MeshbluFirehoseSocketIO', ->
   describe '-> onTypeFrom', ->
     beforeEach (done) ->
       @server.on 'connection', (@socket) =>
-      @sut.connect uuid: 'a-uuid', done
+      @sut.connect done
 
     beforeEach (done) ->
       message =
@@ -79,7 +77,7 @@ describe 'MeshbluFirehoseSocketIO', ->
   describe '-> onType*', ->
     beforeEach (done) ->
       @server.on 'connection', (@socket) =>
-      @sut.connect uuid: 'a-uuid', done
+      @sut.connect done
 
     beforeEach (done) ->
       message =
@@ -96,7 +94,7 @@ describe 'MeshbluFirehoseSocketIO', ->
   describe '-> onSubType**', ->
     beforeEach (done) ->
       @server.on 'connection', (@socket) =>
-      @sut.connect uuid: 'a-uuid', done
+      @sut.connect done
 
     beforeEach (done) ->
       message =
