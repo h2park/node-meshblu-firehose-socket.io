@@ -43,7 +43,7 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
     else
       @_assertNoSrv {service, domain, secure}
       protocol ?= 'https'
-      hostname ?= 'meshblu-firehose-socket-io'
+      hostname ?= 'meshblu-firehose-socket-io.octoblu.com'
       port     ?= 443
 
     @meshbluConfig = {uuid, token, resolveSrv, protocol, hostname, port, service, domain, secure}
