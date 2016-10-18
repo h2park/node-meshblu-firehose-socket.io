@@ -79,7 +79,8 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
         @emit event, arguments...
 
   close: (callback) =>
-    @socket.close callback
+    @socket.disconnect()
+    callback()
 
   _assertNoSrv: ({service, domain, secure}) =>
     throw new Error('domain parameter is only valid when the parameter resolveSrv is true')  if domain?
