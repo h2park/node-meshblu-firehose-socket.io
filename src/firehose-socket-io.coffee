@@ -56,7 +56,8 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
         @emit event, arguments...
 
   close: (callback) =>
-    @socket.close callback
+    @socket.disconnect()
+    callback()
 
   url: ({uuid}) =>
     URL.format
