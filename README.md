@@ -44,7 +44,7 @@ var firehose = new MeshbluFirehoseSocketIO({
    token: 'd5265dbc4576a88f8654a8fc2c4d46a6d7b85574'
   }
 })
-firehose.connect({uuid: '78159106-41ca-4022-95e8-2511695ce64c'}, function(error){
+firehose.connect(function(error){
   if (error) {
     throw error;
   }
