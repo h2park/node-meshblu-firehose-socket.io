@@ -1,13 +1,14 @@
 {
   "name": "meshblu-firehose-socket.io",
-  "version": "2.0.6",
+  "version": "2.0.7",
   "description": "Meshblu Firehose Client for socket.io",
   "main": "index.js",
   "browser": {
     "./index.js": "./dist/bundle.js"
   },
   "scripts": {
-    "test": "istanbul cover _mocha -- -R spec --require coffee-coverage/register-istanbul",
+    "coverage": "nyc npm test",
+    "mocha:json": "env NPM_ENV=test mocha --reporter json > coverage/mocha.json",
     "build": "webpack --config webpack.config.lib.js",
     "bundle": "webpack --config webpack.config.global.js -p"
   },

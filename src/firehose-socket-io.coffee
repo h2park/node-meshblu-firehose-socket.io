@@ -20,7 +20,7 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
   ]
 
   constructor: ({meshbluConfig, @transports}, dependencies={}) ->
-    super wildcard: true
+    super wildcard: true    
     {@dns} = dependencies
 
     throw new Error('MeshbluFirehoseSocketIO: meshbluConfig is required') unless meshbluConfig?
