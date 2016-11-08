@@ -7,13 +7,10 @@ WRONG_SERVER_ERROR = '"identify" received. Likely connected to meshblu-socket-io
 
 class MeshbluFirehoseSocketIO extends EventEmitter2
   @EVENTS = [
-    'close'
     'connect'
     'connect_error'
     'connect_timeout'
-    'connecting'
-    'disconnect'
-    'error'
+    'connecting'    
     'reconnect'
     'reconnect_error'
     'reconnect_failed'
@@ -77,6 +74,15 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
     _.each MeshbluFirehoseSocketIO.EVENTS, (event) =>
       @socket.on event, =>
         @emit event, arguments...
+
+      @socket.on 'error', =>
+        @emit 'socket-io:error', arguments...
+
+      @socket.on 'close', =>
+        @emit 'socket-io:close', arguments...
+
+      @socket.on 'disconnect', =>
+        @emit 'socket-io:disconnect', arguments...
 
   close: (callback) =>
     @socket.disconnect()
