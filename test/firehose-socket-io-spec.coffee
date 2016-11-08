@@ -1,6 +1,6 @@
 {afterEach, beforeEach, describe, it} = global
 {expect} = require 'chai'
-MeshbluFirehoseSocketIO = require '../'
+MeshbluFirehoseSocketIO = require '..'
 URL                     = require 'url'
 SocketIO                = require 'socket.io'
 

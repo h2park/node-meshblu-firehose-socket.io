@@ -10,7 +10,7 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
     'connect'
     'connect_error'
     'connect_timeout'
-    'connecting'    
+    'connecting'
     'reconnect'
     'reconnect_error'
     'reconnect_failed'

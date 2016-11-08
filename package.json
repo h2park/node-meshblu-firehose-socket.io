@@ -1,13 +1,15 @@
 {
   "name": "meshblu-firehose-socket.io",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "Meshblu Firehose Client for socket.io",
   "main": "index.js",
+  "browser": {
+    "./index.js": "./dist/bundle.js"
+  },
   "scripts": {
-    "test": "mocha",
-    "coverage": "nyc npm test",
-    "mocha:json": "env NPM_ENV=test mocha --reporter json > coverage/mocha.json",
-    "test:watch": "mocha -w -R mocha-multi --reporter-options spec=-,mocha-osx-reporter=-"
+    "test": "istanbul cover _mocha -- -R spec --require coffee-coverage/register-istanbul",
+    "build": "webpack --config webpack.config.lib.js",
+    "bundle": "webpack --config webpack.config.global.js -p"
   },
   "repository": {
     "type": "git",
@@ -26,13 +28,15 @@
   "homepage": "https://github.com/octoblu/node-meshblu-firehose-socket.io#readme",
   "devDependencies": {
     "chai": "^3.5.0",
+    "coffee-loader": "^0.7.2",
     "mocha": "^2.4.5",
     "mocha-multi": "^0.9.1",
     "mocha-osx-reporter": "^0.1.2",
     "nyc": "^8.3.0",
     "sinon": "^1.17.3",
     "sinon-chai": "^2.8.0",
-    "socket.io": "^1.4.5"
+    "socket.io": "^1.4.5",
+    "webpack": "^1.13.3"
   },
   "dependencies": {
     "coffee-script": "^1.10.0",
