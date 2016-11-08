@@ -6,8 +6,8 @@ module.exports = {
   ],
   output: {
     library: 'MeshbluFirehose',
-    path: path.join(__dirname, 'deploy', 'firehose-meshblu-socket.io', 'latest'),
-    filename: 'meshblu-firehose.bundle.js'
+    path: path.join(__dirname, 'deploy', 'firehose-meshblu', 'latest'),
+    filename: 'meshblu-firehose-socket.io.bundle.js'
   },
   module: {
     loaders: [
