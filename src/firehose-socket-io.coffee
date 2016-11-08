@@ -20,7 +20,7 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
   ]
 
   constructor: ({meshbluConfig, @transports}, dependencies={}) ->
-    super wildcard: true    
+    super wildcard: true
     {@dns} = dependencies
 
     throw new Error('MeshbluFirehoseSocketIO: meshbluConfig is required') unless meshbluConfig?
@@ -131,6 +131,8 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
     return callback null, @_resolveNormalUrl() unless @meshbluConfig.resolveSrv
 
     @dns ?= require 'dns'
+    return callback null, @_resolveNormalUrl() if  _.isEmpty @dns
+    
     @dns.resolveSrv @_getSrvAddress(), (error, addresses) =>
       return callback error if error?
       return callback new Error('SRV record found, but contained no valid addresses') if _.isEmpty addresses
