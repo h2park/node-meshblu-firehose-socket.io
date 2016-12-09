@@ -130,9 +130,7 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
   _resolveBaseUrl: (callback) =>
     return callback null, @_resolveNormalUrl() unless @meshbluConfig.resolveSrv
 
-    @dns ?= require 'dns'
-    return callback null, @_resolveNormalUrl() if  _.isEmpty @dns
-    
+    @dns ?= require 'isomorphic-dns'
     @dns.resolveSrv @_getSrvAddress(), (error, addresses) =>
       return callback error if error?
       return callback new Error('SRV record found, but contained no valid addresses') if _.isEmpty addresses
