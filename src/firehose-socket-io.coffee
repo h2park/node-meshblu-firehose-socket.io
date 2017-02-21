@@ -19,7 +19,7 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
     'upgradeError'
   ]
 
-  constructor: ({meshbluConfig, @transports}, dependencies={}) ->
+  constructor: ({meshbluConfig, @transports, @reconnectionAttempts}, dependencies={}) ->
     super wildcard: true
     {@dns} = dependencies
 
@@ -51,6 +51,7 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
 
       options =
         path: "/socket.io/v1/#{@meshbluConfig.uuid}"
+        reconnectionAttempts: @reconnectionAttempts
         extraHeaders:
           'X-Meshblu-UUID': @meshbluConfig.uuid
           'X-Meshblu-Token': @meshbluConfig.token
