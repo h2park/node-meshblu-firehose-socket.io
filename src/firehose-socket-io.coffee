@@ -1,6 +1,8 @@
+Backoff        = require 'backo'
 _              = require 'lodash'
-SocketIOClient = require 'socket.io-client'
 EventEmitter2  = require 'eventemitter2'
+SocketIOClient = require 'socket.io-client'
+SrvFailover    = require 'srv-failover'
 URL            = require 'url'
 
 WRONG_SERVER_ERROR = '"identify" received. Likely connected to meshblu-socket-io instead of the meshblu-firehose-socket-io'
@@ -19,13 +21,15 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
     'upgradeError'
   ]
 
-  constructor: ({meshbluConfig, @transports, @reconnectionAttempts}, dependencies={}) ->
+  constructor: ({meshbluConfig, @transports}, dependencies={}) ->
     super wildcard: true
     {@dns} = dependencies
 
     throw new Error('MeshbluFirehoseSocketIO: meshbluConfig is required') unless meshbluConfig?
     throw new Error('MeshbluFirehoseSocketIO: meshbluConfig.uuid is required') unless meshbluConfig.uuid?
     throw new Error('MeshbluFirehoseSocketIO: meshbluConfig.token is required') unless meshbluConfig.token?
+
+    @backoff = new Backoff
 
     {uuid, token}              = meshbluConfig
     {protocol, hostname, port} = meshbluConfig
@@ -36,7 +40,12 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
       @_assertNoUrl {protocol, hostname, port}
       domain  ?= 'octoblu.com'
       service ?= 'meshblu-firehose'
-      secure  ?= true
+      srvProtocol = 'socket-io-wss'
+      urlProtocol = 'wss'
+      if secure == false
+        srvProtocol = 'socket-io-ws'
+        urlProtocol = 'ws'
+      @srvFailover = new SrvFailover {domain, service, protocol: srvProtocol, urlProtocol}
     else
       @_assertNoSrv {service, domain, secure}
       protocol ?= 'https'
@@ -46,12 +55,14 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
     @meshbluConfig = {uuid, token, resolveSrv, protocol, hostname, port, service, domain, secure}
 
   connect: (callback) =>
+    callback = _.once callback
+
     @_resolveBaseUrl (error, baseUrl) =>
       return callback error if error?
 
       options =
         path: "/socket.io/v1/#{@meshbluConfig.uuid}"
-        reconnectionAttempts: @reconnectionAttempts
+        reconnection: false
         extraHeaders:
           'X-Meshblu-UUID': @meshbluConfig.uuid
           'X-Meshblu-Token': @meshbluConfig.token
@@ -63,11 +74,12 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
       @socket = SocketIOClient baseUrl, options
       @socket.once 'identify', => @emit 'error', new Error(WRONG_SERVER_ERROR)
       @socket.once 'connect', =>
+        @backoff.reset()
         callback()
-        callback = ->
-      @socket.once 'connect_error', (error) =>
-        callback error
-        callback = ->
+      @socket.once 'connect_error', =>
+        return callback error unless @srvFailover?
+        @srvFailover.markBadUrl baseUrl, ttl: 60000
+        _.delay @connect, @backoff.duration(), callback
       @bindEvents()
 
   bindEvents: =>
@@ -106,15 +118,6 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
     channel = "#{type}.#{from}"
     @emit channel, message
 
-  _getSrvAddress: =>
-    {service, domain} = @meshbluConfig
-    return "_#{service}._#{@_getSrvProtocol()}.#{domain}"
-
-  _getSrvProtocol: =>
-    {secure} = @meshbluConfig
-    return 'socket-io-wss' if secure
-    return 'socket-io-ws'
-
   _onMessage: (message) =>
     newMessage =
       metadata: message.metadata
@@ -130,12 +133,12 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
 
   _resolveBaseUrl: (callback) =>
     return callback null, @_resolveNormalUrl() unless @meshbluConfig.resolveSrv
-
-    @dns ?= require 'isomorphic-dns'
-    @dns.resolveSrv @_getSrvAddress(), (error, addresses) =>
+    return @srvFailover.resolveUrl (error, baseUrl) =>
+      if error && error.noValidAddresses
+        @srvFailover.clearBadUrls()
+        return @_resolveBaseUrl callback
       return callback error if error?
-      return callback new Error('SRV record found, but contained no valid addresses') if _.isEmpty addresses
-      return callback null, @_resolveUrlFromAddresses(addresses)
+      return callback null, baseUrl
 
   _resolveNormalUrl: =>
     {protocol, hostname, port} = @meshbluConfig
@@ -144,19 +147,6 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
     protocol  = 'wss' if port == 443
 
     URL.format {protocol, hostname, port, slashes: true}
-
-  _resolveUrlFromAddresses: (addresses) =>
-    {secure} = @meshbluConfig
-    address  = _.minBy addresses, 'priority'
-
-    protocol = if secure then 'wss' else 'ws'
-
-    return URL.format {
-      protocol: protocol
-      hostname: address.name
-      port: address.port
-      slashes: true
-    }
 
 
 module.exports = MeshbluFirehoseSocketIO
