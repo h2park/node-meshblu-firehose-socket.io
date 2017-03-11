@@ -54,11 +54,13 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
 
     @meshbluConfig = {uuid, token, resolveSrv, protocol, hostname, port, service, domain, secure}
 
-  connect: (callback) =>
-    callback = _.once callback
+  connect: =>
+    @emit 'connecting'
 
     @_resolveBaseUrl (error, baseUrl) =>
-      return callback error if error?
+      if error?
+        @emit 'resolve-base-url:error', error
+        return @_reconnect()
 
       options =
         path: "/socket.io/v1/#{@meshbluConfig.uuid}"
@@ -72,15 +74,26 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
         transports: @transports
 
       @socket = SocketIOClient baseUrl, options
+
       @socket.once 'identify', => @emit 'error', new Error(WRONG_SERVER_ERROR)
+
       @socket.once 'connect', =>
         @backoff.reset()
-        callback()
-      @socket.once 'connect_error', =>
-        return callback error unless @srvFailover?
-        @srvFailover.markBadUrl baseUrl, ttl: 60000
-        _.delay @connect, @backoff.duration(), callback
+        @emit 'connect'
+
+      @socket.once 'disconnect', =>
+        @_reconnect()
+
+      @socket.once 'connect_error', (error) =>
+        @emit 'connect_error', error if error? && !@srvFailover?
+        @srvFailover.markBadUrl baseUrl, ttl: 60000 if @srvFailover
+        @_reconnect()
+
       @bindEvents()
+
+  _reconnect: (callback=->) =>
+    @emit 'reconnecting'
+    _.delay @connect, @backoff.duration(), callback
 
   bindEvents: =>
     @socket.on 'message', @_onMessage
@@ -88,7 +101,7 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
       @socket.on event, =>
         @emit event, arguments...
 
-      @socket.on 'error', =>
+      @socket.on 'error', (error) =>
         @emit 'socket-io:error', arguments...
 
       @socket.on 'close', =>
@@ -98,8 +111,8 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
         @emit 'socket-io:disconnect', arguments...
 
   close: (callback) =>
+    @socket.once 'disconnect', callback
     @socket.disconnect()
-    callback()
 
   _assertNoSrv: ({service, domain, secure}) =>
     throw new Error('domain parameter is only valid when the parameter resolveSrv is true')  if domain?

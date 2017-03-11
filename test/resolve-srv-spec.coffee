@@ -42,7 +42,8 @@ describe 'Meshblu', ->
             weight: 100
           }]
           @sut.on 'error', done
-          @sut.connect done
+          @sut.once 'connect', done
+          @sut.connect()
 
         it 'should get here', ->
           # getting here is enough
