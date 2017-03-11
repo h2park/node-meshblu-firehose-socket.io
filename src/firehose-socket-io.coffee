@@ -55,6 +55,7 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
     @meshbluConfig = {uuid, token, resolveSrv, protocol, hostname, port, service, domain, secure}
 
   connect: =>
+    @closing = false
     @emit 'connecting'
 
     @_resolveBaseUrl (error, baseUrl) =>
@@ -82,18 +83,19 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
         @emit 'connect'
 
       @socket.once 'disconnect', =>
+        return if @closing
         @_reconnect()
 
       @socket.once 'connect_error', (error) =>
         @emit 'connect_error', error if error? && !@srvFailover?
-        @srvFailover.markBadUrl baseUrl, ttl: 60000 if @srvFailover
+        @srvFailover.markBadUrl baseUrl, ttl: 60000 if @srvFailover?
         @_reconnect()
 
       @bindEvents()
 
-  _reconnect: (callback=->) =>
+  _reconnect: =>
     @emit 'reconnecting'
-    _.delay @connect, @backoff.duration(), callback
+    _.delay @connect, @backoff.duration()
 
   bindEvents: =>
     @socket.on 'message', @_onMessage
@@ -111,6 +113,7 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
         @emit 'socket-io:disconnect', arguments...
 
   close: (callback) =>
+    @closing = true
     @socket.once 'disconnect', callback
     @socket.disconnect()
 
