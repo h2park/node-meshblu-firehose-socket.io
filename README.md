@@ -17,7 +17,7 @@ Meshblu Firehose client for socket.io, stream messages from Meshblu Subscription
   * [Event: "message"](#event-message)
 * [Methods](#methods)
   * [constructor(options)](#constructoroptions)
-  * [firehose.connect(callback)](#firehoseconnectcallback)
+  * [firehose.connect()](#firehoseconnect)
 
 # Getting Started
 
@@ -44,12 +44,7 @@ var firehose = new MeshbluFirehoseSocketIO({
    token: 'd5265dbc4576a88f8654a8fc2c4d46a6d7b85574'
   }
 })
-firehose.connect(function(error){
-  if (error) {
-    throw error;
-  }
-  console.log('Ready to rock');
-});
+firehose.connect();
 ```
 
 # Events
@@ -131,27 +126,35 @@ var conn = new MeshbluFirehoseSocketIO({
 })
 ```
 
-## meshblu.connect(callback)
+#firehoseconnect
+## meshblu.connect()
 
 Establish a socket.io connection to Meshblu Firehosea.
 
-##### Arguments
-
-* `callback` Optional Function that will be called when the socket.io connection is established.
-  * `error` Javascript error object when the connection failed. Will be undefined if no error occured.
-
 ##### Note
 
-The callback is called once the socket.io connection is *connected*. `message` events will be emitted as soon as messages are received from Meshblu.
+Connect no longer takes a callback. `message` events will be emitted as soon as messages are received from Meshblu.
+On `disconnect` events the firehose will attempt to automatically reconnect.
 
 ##### Example
 
 
 ```javascript
-firehose.connect(function(error){
-  if (error) {
-    throw error;
-  }
+firehose.on('connecting', function() {
+  console.log('connecting...');
+})
+firehose.on('connect', function() {
   console.log('connected!');
-});
+})
+firehose.on('connect_error', function(error) {
+  console.error('connect_error', error)
+})
+firehose.on('disconnect', function() {
+  console.log('disconnected!');
+})
+firehose.on('reconnecting', function() {
+  console.log('reconnecting...');
+})
+
+firehose.connect()
 ```

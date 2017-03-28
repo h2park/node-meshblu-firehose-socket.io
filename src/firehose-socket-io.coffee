@@ -8,15 +8,14 @@ URL            = require 'url'
 WRONG_SERVER_ERROR = '"identify" received. Likely connected to meshblu-socket-io instead of the meshblu-firehose-socket-io'
 
 class MeshbluFirehoseSocketIO extends EventEmitter2
-  @EVENTS = [
+  @FORWARD_EVENTS = [
     'connect'
     'connect_error'
     'connect_timeout'
-    'connecting'
+    'disconnect'
     'reconnect'
     'reconnect_error'
     'reconnect_failed'
-    'reconnecting'
     'upgrade'
     'upgradeError'
   ]
@@ -54,7 +53,9 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
 
     @meshbluConfig = {uuid, token, resolveSrv, protocol, hostname, port, service, domain, secure}
 
-  connect: =>
+  connect: (callback) =>
+    throw new Error 'connect should not take a callback' if callback?
+
     @closing = false
     @emit 'connecting'
 
@@ -76,18 +77,17 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
 
       @socket = SocketIOClient baseUrl, options
 
-      @socket.once 'identify', => @emit 'error', new Error(WRONG_SERVER_ERROR)
+      @socket.once 'identify', =>
+        @emit 'error', new Error(WRONG_SERVER_ERROR)
 
       @socket.once 'connect', =>
         @backoff.reset()
-        @emit 'connect'
 
       @socket.once 'disconnect', =>
         return if @closing
         @_reconnect()
 
       @socket.once 'connect_error', (error) =>
-        @emit 'connect_error', error if error? && !@srvFailover?
         @srvFailover.markBadUrl baseUrl, ttl: 60000 if @srvFailover?
         @_reconnect()
 
@@ -99,22 +99,20 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
 
   bindEvents: =>
     @socket.on 'message', @_onMessage
-    _.each MeshbluFirehoseSocketIO.EVENTS, (event) =>
+
+    @socket.on 'error', (error) =>
+      @emit 'socket-io:error', arguments...
+
+    @socket.on 'close', =>
+      @emit 'socket-io:close', arguments...
+
+    _.each MeshbluFirehoseSocketIO.FORWARD_EVENTS, (event) =>
       @socket.on event, =>
         @emit event, arguments...
 
-      @socket.on 'error', (error) =>
-        @emit 'socket-io:error', arguments...
-
-      @socket.on 'close', =>
-        @emit 'socket-io:close', arguments...
-
-      @socket.on 'disconnect', =>
-        @emit 'socket-io:disconnect', arguments...
-
-  close: (callback) =>
+  close: (callback=->) =>
     @closing = true
-    @socket.once 'disconnect', callback
+    @socket.once 'disconnect', => callback()
     @socket.disconnect()
 
   _assertNoSrv: ({service, domain, secure}) =>
