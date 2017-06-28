@@ -2,9 +2,9 @@
 {expect} = require 'chai'
 sinon    = require 'sinon'
 SocketIO = require 'socket.io'
-Meshblu  = require '../src/firehose-socket-io'
+Firehose  = require '../src/firehose-socket-io'
 
-describe 'Meshblu', ->
+describe 'Firehose', ->
   beforeEach ->
     @server = new SocketIO 34715
 
@@ -20,27 +20,19 @@ describe 'Meshblu', ->
           uuid: 'foo'
           token: 'toalsk'
         }
-        expect(=> new Meshblu {meshbluConfig}).to.throw(
+        expect(=> new Firehose {meshbluConfig}).to.throw(
           'hostname parameter is only valid when the parameter resolveSrv is false'
         )
 
     describe 'when constructed with resolveSrv true, secure false, and nothing else', ->
-      beforeEach ->
-        @dns = resolveSrv: sinon.stub()
-
+      beforeEach 'create sut', ->
         meshbluConfig = {resolveSrv: true, secure: false, uuid: '1', token: '1'}
-        dependencies = {@dns, @WebSocket}
-
-        @sut = new Meshblu {meshbluConfig}, dependencies
+        @srvFailover = {}
+        @sut = new Firehose { meshbluConfig, @srvFailover }
 
       describe 'when connect is called', ->
         beforeEach 'making the request', (done) ->
-          @dns.resolveSrv.withArgs('_meshblu-firehose._socket-io-ws.octoblu.com').yields null, [{
-            name: 'localhost'
-            port: 34715
-            priority: 1
-            weight: 100
-          }]
+          @srvFailover.resolveUrl = sinon.stub().withArgs('_meshblu-firehose._socket-io-ws.octoblu.com').yields null, 'ws://localhost:34715'
           @sut.on 'error', done
           @sut.once 'connect', done
           @sut.connect()

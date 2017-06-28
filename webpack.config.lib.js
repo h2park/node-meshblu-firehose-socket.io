@@ -3,7 +3,7 @@ var webpack           = require('webpack');
 module.exports = {
   devtool: 'cheap-eval',
   entry: [
-    './index.coffee'
+    './src/firehose-socket-io.coffee'
   ],
   output: {
     libraryTarget: 'commonjs2',

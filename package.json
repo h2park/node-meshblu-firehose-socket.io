@@ -1,15 +1,15 @@
 {
   "name": "meshblu-firehose-socket.io",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "Meshblu Firehose Client for socket.io",
-  "main": "index.js",
+  "main": "./dist/firehose-socket-io.js",
   "browser": {
     "./index.js": "./dist/bundle.js"
   },
   "scripts": {
     "coverage": "nyc npm test",
     "mocha:json": "env NPM_ENV=test mocha --reporter json > coverage/mocha.json",
-    "build": "webpack --config webpack.config.lib.js",
+    "build": "webpack --config webpack.config.lib.js && coffee --compile --output dist/ --map src/*.coffee",
     "bundle": "webpack --config webpack.config.global.js -p",
     "test": "mocha"
   },
@@ -46,7 +46,7 @@
     "eventemitter2": "^2.2.1",
     "lodash": "^4.17.4",
     "socket.io-client": "^1.7.2",
-    "srv-failover": "^1.3.0"
+    "srv-failover": "^2.0.0"
   },
   "nyc": {
     "cache": true,

@@ -20,9 +20,8 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
     'upgradeError'
   ]
 
-  constructor: ({meshbluConfig, @transports}, dependencies={}) ->
+  constructor: ({meshbluConfig, @transports, @srvFailover}) ->
     super wildcard: true
-    {@dns} = dependencies
 
     throw new Error('MeshbluFirehoseSocketIO: meshbluConfig is required') unless meshbluConfig?
     throw new Error('MeshbluFirehoseSocketIO: meshbluConfig.uuid is required') unless meshbluConfig.uuid?
@@ -44,7 +43,7 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
       if secure == false
         srvProtocol = 'socket-io-ws'
         urlProtocol = 'ws'
-      @srvFailover = new SrvFailover {domain, service, protocol: srvProtocol, urlProtocol}
+      @srvFailover ?= new SrvFailover {domain, service, protocol: srvProtocol, urlProtocol}
     else
       @_assertNoSrv {service, domain, secure}
       protocol ?= 'https'
@@ -87,7 +86,7 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
         return if @closing
         @_reconnect()
 
-      @socket.once 'connect_error', (error) =>
+      @socket.once 'connect_error', =>
         @srvFailover.markBadUrl baseUrl, ttl: 60000 if @srvFailover?
         @_reconnect()
 
@@ -100,7 +99,7 @@ class MeshbluFirehoseSocketIO extends EventEmitter2
   bindEvents: =>
     @socket.on 'message', @_onMessage
 
-    @socket.on 'error', (error) =>
+    @socket.on 'error', =>
       @emit 'socket-io:error', arguments...
 
     @socket.on 'close', =>
