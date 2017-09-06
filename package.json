@@ -1,6 +1,6 @@
 {
   "name": "meshblu-firehose-socket.io",
-  "version": "4.0.2",
+  "version": "4.0.3",
   "description": "Meshblu Firehose Client for socket.io",
   "main": "./dist/firehose-socket-io.js",
   "browser": {

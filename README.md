@@ -58,6 +58,15 @@ The `message` event is emitted whenever a device sends or receives a message. In
   * `metadata` Object containing metadata about the message, including the `route`.
   * `data` The contents of the message.
 
+## Event: "type.uuid"
+
+The `type.uuid` event is emitted whenever a device sends or receives a message. This allows filtering of the events received by type and/or uuid and also supports wildcards. (e.g. "broadcast.sent.413dfa3c-1ccd-473a-b9f6-4b8b62585291", "configure.\*", or "\*.c2595144-076d-4f66-b483-429140d27bcf", )
+
+* `message` Message object that was received.
+  * `metadata` Object containing metadata about the message, including the `route`.
+  * `data` The contents of the message.
+
+
 ##### Example
 
 ```javascript
